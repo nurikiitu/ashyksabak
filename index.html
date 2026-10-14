@@ -57,7 +57,7 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .card2{background:#fff;border-radius:30px;padding:10px 40px;display:flex;flex-direction:column;align-items:center;box-shadow:0 8px 0 rgba(0,0,0,.15);touch-action:none;cursor:grab;min-width:220px}
 .card2 .pic{font-size:clamp(100px,12vw,160px)}
 .card2 .nm{font-size:clamp(26px,3vw,40px);font-weight:900;min-height:1.3em}
-.card2 .nm .k{color:var(--k)}.card2 .nm .gap{display:inline-block;min-width:.8em;border-bottom:4px solid #333;color:#999;margin:0 2px}.card2 .nm .g{color:var(--g)}
+.card2 .nm .k{color:var(--k)}.card2 .nm .g{color:var(--g)}
 #flash{position:fixed;left:50%;top:14%;translate:-50% 0;font-size:clamp(34px,5vw,64px);font-weight:900;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.3);pointer-events:none;opacity:0;transition:opacity .2s;z-index:15;white-space:nowrap}
 #flash.on{opacity:1}
 #final{position:fixed;inset:0;background:rgba(40,20,40,.55);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
@@ -76,7 +76,7 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .kjn{font-size:clamp(20px,2.4vw,34px);font-weight:900}
 .kjsc{font-size:clamp(50px,6vw,90px);font-weight:900;background:#fff;border-radius:22px;min-width:110px;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.15);padding:0 16px}
 .kjb{display:flex;gap:18px}
-.kjm{flex:1.1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.kjm{flex:.55;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 .bltop{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:1400px}
 .bltop .r{color:var(--k)}.bltop .b{color:var(--g)}
 .bltm{font-size:clamp(40px,4.4vw,64px);font-weight:900;background:rgba(255,255,255,.75);border-radius:20px;padding:0 22px}.bltm.warn{background:var(--k);color:#fff}
@@ -90,6 +90,14 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .bal .be{font-size:clamp(34px,3.6vw,52px);line-height:1}.bal .bw{font-size:clamp(14px,1.5vw,22px);font-weight:900;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
 .bal.boom{animation:boom .25s forwards}@keyframes boom{to{scale:1.6;opacity:0}}
 @media(max-width:700px){.kj{flex-direction:column}.kjm{order:-1}.kjsc{font-size:40px;min-width:70px}.blw{flex-direction:column;min-height:80vh}.bal{width:80px;height:100px}}
+.kjn .kjsc{font-size:clamp(34px,3.6vw,54px);min-width:70px;display:inline-block;vertical-align:middle;margin-left:8px}
+.kjw{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.kjw .sl{width:clamp(34px,3.4vw,52px);height:clamp(44px,4.4vw,66px);border-bottom:5px solid #333;background:rgba(255,255,255,.7);border-radius:10px 10px 4px 4px;font-size:clamp(28px,3vw,46px);font-weight:900;display:flex;align-items:center;justify-content:center}
+.kjw .sl.k{color:var(--k)}.kjw .sl.g{color:var(--g)}
+.kjt{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:560px}
+.kjt .lt{width:clamp(56px,5.4vw,96px);height:clamp(56px,5.4vw,96px);font-size:clamp(30px,3.2vw,54px)}
+.kjt .lt:not(.k):not(.g){background:#fff;color:#223;border:3px solid #ccd}
+.kjt .lt.used{opacity:.15;pointer-events:none}
 #cf{position:fixed;inset:0;pointer-events:none;z-index:30}
 @media(max-width:700px){.tiles{gap:16px}.bins{gap:10px}.card2{padding:8px 20px}.wl{border-radius:12px}}
 </style>
@@ -180,20 +188,21 @@ function duelEnd(id,sc,extra){if(!alive(id))return;RID++;const w=sc[0]>sc[1]?0:s
   $('#fst').textContent=w<0?'🤝':'🏆';$('#fh').textContent=w<0?'Тең түсті!':nm(w)+' жеңді!';$('#fp').innerHTML=`🔴 ${sc[0]} : ${sc[1]} 🔵`+(extra?'<br>'+extra:'');$('#final').classList.add('on');beep('win');confetti()}
 const ALLW=[...KW,...GW];
 const DGAMES=[
-{icon:'⚡',title:'Кім жылдам?',sub:'Сөзде қай әріп жетіспейді? Бірінші боп К не Г бас! 10 ұпайға дейін',
- run(st,id){const GOAL=10,sc=[0,0];let q=shuffle(ALLW),qi=0,cur=null,locked=[false,false],busy=false;
+{icon:'⚡',title:'Кім жылдам?',sub:'Суретте не бар? Сөзді әріптерден бірінші боп құрастыр! 5 ұпайға дейін',
+ run(st,id){const GOAL=5,sc=[0,0];let q=shuffle(ALLW),qi=0,cur=null,busy=false;const ABC='аәбдеилмнопрстуүыі'.split('');
    const wrap=el('div','kj');st.append(wrap);
-   const side=si=>{const d=el('div','kjs s'+si,`<div class="kjn">${si?'🔵 2-оқушы':'🔴 1-оқушы'}</div><div class="kjsc">0</div><div class="kjb"></div>`);
-     [['к','К','k'],['г','Г','g']].forEach(([v,lab,c])=>{const b=el('button','lt '+c,lab);b.onclick=()=>press(si,v,d);d.querySelector('.kjb').append(b)});return d};
-   const s0=side(0),mid=el('div','kjm',`<div class="card2"><div class="pic"></div><div class="nm">?</div></div><div class="dots"></div>`),s1=side(1);wrap.append(s0,mid,s1);
-   const pic=mid.querySelector('.pic'),nm=mid.querySelector('.nm'),dots=mid.querySelector('.dots');
-   const drawDots=()=>{dots.innerHTML=`<b style="font-size:20px">Мақсат: ${GOAL} ұпай</b>`};drawDots();
-   const next=()=>{if(!alive(id))return;if(qi>=q.length){q=shuffle(ALLW);qi=0}cur=q[qi++];locked=[false,false];busy=false;[s0,s1].forEach(d=>d.classList.remove('lock','win'));pic.textContent=cur[0];reanim(pic,'pop');nm.innerHTML=[...cur[1]].map(c=>/[кг]/.test(c)?'<span class="gap">?</span>':c).join('')};
-   function press(si,v,d){if(busy||locked[si]||!alive(id))return;const L=letterOf(cur[1]);
-     if(v===L){busy=true;sc[si]++;beep('ok');d.querySelector('.kjsc').textContent=sc[si];d.classList.add('win');nm.innerHTML=colorWord(cur[1]);
-       if(sc[si]>=GOAL)return setTimeout(()=>duelEnd(id,sc),900);setTimeout(next,1100)}
-     else{beep('bad');locked[si]=true;d.classList.add('lock');reanim(d.querySelector('.kjb'),'shake');
-       if(locked[0]&&locked[1]){busy=true;nm.innerHTML=colorWord(cur[1]);setTimeout(next,1300)}}}
+   const side=si=>el('div','kjs s'+si,`<div class="kjn">${si?'🔵 2-оқушы':'🔴 1-оқушы'} <span class="kjsc">0</span></div><div class="kjw"></div><div class="kjt"></div>`);
+   const s0=side(0),mid=el('div','kjm',`<div class="card2"><div class="pic"></div><div class="nm"></div></div><b style="font-size:20px">Мақсат: ${GOAL} ұпай</b>`),s1=side(1);wrap.append(s0,mid,s1);
+   const pic=mid.querySelector('.pic'),nm=mid.querySelector('.nm');
+   function setup(d,si){const w=cur[1],slots=d.querySelector('.kjw'),tl=d.querySelector('.kjt');d.classList.remove('win','lock');d.pos=0;
+     slots.innerHTML=[...w].map(()=>'<span class="sl"></span>').join('');
+     const ex=[];if(w.includes('к'))ex.push('г');if(w.includes('г'))ex.push('к');let r;do{r=ABC[Math.floor(Math.random()*ABC.length)]}while(w.includes(r));ex.push(r);
+     tl.innerHTML='';shuffle([...w,...ex]).forEach(ch=>{const b=el('button','lt '+(ch==='к'?'k':ch==='г'?'g':''),ch);
+       b.onclick=()=>{if(busy||!alive(id)||b.disabled)return;if(ch===w[d.pos]){b.disabled=true;b.classList.add('used');const sl=slots.children[d.pos];sl.textContent=ch;sl.className='sl f'+(ch==='к'?' k':ch==='г'?' g':'');d.pos++;
+         if(d.pos===w.length){busy=true;sc[si]++;beep('ok');d.querySelector('.kjsc').textContent=sc[si];d.classList.add('win');nm.innerHTML=colorWord(w);
+           if(sc[si]>=GOAL)return setTimeout(()=>duelEnd(id,sc),1200);setTimeout(next,1600)}}
+         else{beep('bad');reanim(b,'shake')}};tl.append(b)})}
+   const next=()=>{if(!alive(id))return;if(qi>=q.length){q=shuffle(ALLW);qi=0}cur=q[qi++];busy=false;pic.textContent=cur[0];reanim(pic,'pop');nm.innerHTML='';setup(s0,0);setup(s1,1)};
    next()}},
 {icon:'🎈',title:'Шарларды жар',sub:'🔴 К әрпі бар шарларды, 🔵 Г әрпі бар шарларды жарады. 60 секунд',
  run(st,id){const sc=[0,0],LIM=60,t0=performance.now();
