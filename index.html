@@ -72,7 +72,7 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .kj{display:flex;gap:16px;width:100%;flex:1;align-items:stretch}
 .kjs{flex:1;border-radius:28px;border:6px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:14px;transition:background .2s}
 .kjs.s0{border-color:var(--k);background:rgba(229,57,53,.12)}.kjs.s1{border-color:var(--g);background:rgba(30,136,229,.12)}
-.kjs.win{background:rgba(46,158,68,.35)}.kjs.lock{opacity:.4}
+.kjs.win{background:rgba(46,158,68,.35)}
 .kjn{font-size:clamp(20px,2.4vw,34px);font-weight:900}
 .kjsc{font-size:clamp(50px,6vw,90px);font-weight:900;background:#fff;border-radius:22px;min-width:110px;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.15);padding:0 16px}
 .kjb{display:flex;gap:18px}
@@ -93,7 +93,8 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .kjn .kjsc{font-size:clamp(34px,3.6vw,54px);min-width:70px;display:inline-block;vertical-align:middle;margin-left:8px}
 .kjw{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .kjw .sl{width:clamp(34px,3.4vw,52px);height:clamp(44px,4.4vw,66px);border-bottom:5px solid #333;background:rgba(255,255,255,.7);border-radius:10px 10px 4px 4px;font-size:clamp(28px,3vw,46px);font-weight:900;display:flex;align-items:center;justify-content:center}
-.kjw .sl.k{color:var(--k)}.kjw .sl.g{color:var(--g)}
+.kjw .sl.ok{background:#c8f7c5;border-color:var(--grn)}.kjw .sl.no{background:#ffc9c9;border-color:var(--k);color:var(--k)}
+.kjs.lock .kjt{opacity:.3}
 .kjt{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:560px}
 .kjt .lt{width:clamp(56px,5.4vw,96px);height:clamp(56px,5.4vw,96px);font-size:clamp(30px,3.2vw,54px)}
 .kjt .lt:not(.k):not(.g){background:#fff;color:#223;border:3px solid #ccd}
@@ -188,20 +189,22 @@ function duelEnd(id,sc,extra){if(!alive(id))return;RID++;const w=sc[0]>sc[1]?0:s
   $('#fst').textContent=w<0?'🤝':'🏆';$('#fh').textContent=w<0?'Тең түсті!':nm(w)+' жеңді!';$('#fp').innerHTML=`🔴 ${sc[0]} : ${sc[1]} 🔵`+(extra?'<br>'+extra:'');$('#final').classList.add('on');beep('win');confetti()}
 const ALLW=[...KW,...GW];
 const DGAMES=[
-{icon:'⚡',title:'Кім жылдам?',sub:'Суретте не бар? Сөзді әріптерден бірінші боп құрастыр! 5 ұпайға дейін',
+{icon:'⚡',title:'Кім жылдам?',sub:'Суретте не бар? Сөзді бірінші боп дұрыс жаз! Қате жазсаң — ол сөзден ұтыласың. 5 ұпайға дейін',
  run(st,id){const GOAL=5,sc=[0,0];let q=shuffle(ALLW),qi=0,cur=null,busy=false;const ABC='аәбдеилмнопрстуүыі'.split('');
    const wrap=el('div','kj');st.append(wrap);
    const side=si=>el('div','kjs s'+si,`<div class="kjn">${si?'🔵 2-оқушы':'🔴 1-оқушы'} <span class="kjsc">0</span></div><div class="kjw"></div><div class="kjt"></div>`);
    const s0=side(0),mid=el('div','kjm',`<div class="card2"><div class="pic"></div><div class="nm"></div></div><b style="font-size:20px">Мақсат: ${GOAL} ұпай</b>`),s1=side(1);wrap.append(s0,mid,s1);
    const pic=mid.querySelector('.pic'),nm=mid.querySelector('.nm');
-   function setup(d,si){const w=cur[1],slots=d.querySelector('.kjw'),tl=d.querySelector('.kjt');d.classList.remove('win','lock');d.pos=0;
+   function setup(d,si){const w=cur[1],slots=d.querySelector('.kjw'),tl=d.querySelector('.kjt');d.classList.remove('win','lock');d.pos=0;d.done=false;
      slots.innerHTML=[...w].map(()=>'<span class="sl"></span>').join('');
      const ex=[];if(w.includes('к'))ex.push('г');if(w.includes('г'))ex.push('к');let r;do{r=ABC[Math.floor(Math.random()*ABC.length)]}while(w.includes(r));ex.push(r);
      tl.innerHTML='';shuffle([...w,...ex]).forEach(ch=>{const b=el('button','lt '+(ch==='к'?'k':ch==='г'?'g':''),ch);
-       b.onclick=()=>{if(busy||!alive(id)||b.disabled)return;if(ch===w[d.pos]){b.disabled=true;b.classList.add('used');const sl=slots.children[d.pos];sl.textContent=ch;sl.className='sl f'+(ch==='к'?' k':ch==='г'?' g':'');d.pos++;
-         if(d.pos===w.length){busy=true;sc[si]++;beep('ok');d.querySelector('.kjsc').textContent=sc[si];d.classList.add('win');nm.innerHTML=colorWord(w);
-           if(sc[si]>=GOAL)return setTimeout(()=>duelEnd(id,sc),1200);setTimeout(next,1600)}}
-         else{beep('bad');reanim(b,'shake')}};tl.append(b)})}
+       b.onclick=()=>{if(busy||!alive(id)||b.disabled||d.done)return;b.disabled=true;b.classList.add('used');beep('ok');const sl=slots.children[d.pos];sl.textContent=ch;sl.className='sl f';d.pos++;
+         if(d.pos<w.length)return;d.done=true;const typed=[...slots.children].map(x=>x.textContent).join('');
+         if(typed===w){busy=true;sc[si]++;beep('win');[...slots.children].forEach(x=>x.classList.add('ok'));d.querySelector('.kjsc').textContent=sc[si];d.classList.add('win');nm.innerHTML=colorWord(w);
+           if(sc[si]>=GOAL)return setTimeout(()=>duelEnd(id,sc),1300);setTimeout(next,1800)}
+         else{beep('bad');[...slots.children].forEach((x,k)=>x.classList.add(x.textContent===w[k]?'ok':'no'));d.classList.add('lock');reanim(slots,'shake');
+           if(s0.done&&s1.done&&!busy){busy=true;nm.innerHTML=colorWord(w);setTimeout(next,2200)}}};tl.append(b)})}
    const next=()=>{if(!alive(id))return;if(qi>=q.length){q=shuffle(ALLW);qi=0}cur=q[qi++];busy=false;pic.textContent=cur[0];reanim(pic,'pop');nm.innerHTML='';setup(s0,0);setup(s1,1)};
    next()}},
 {icon:'🎈',title:'Шарларды жар',sub:'🔴 К әрпі бар шарларды, 🔵 Г әрпі бар шарларды жарады. 60 секунд',
