@@ -68,6 +68,28 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .fb p{font-size:clamp(20px,2.4vw,30px);font-weight:900;margin:8px 0 20px}
 .fb .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .fb .btn{background:var(--g);color:#fff}
+.sech{text-align:center;font-size:clamp(26px,3vw,40px);font-weight:900;margin-top:4px}
+.kj{display:flex;gap:16px;width:100%;flex:1;align-items:stretch}
+.kjs{flex:1;border-radius:28px;border:6px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:14px;transition:background .2s}
+.kjs.s0{border-color:var(--k);background:rgba(229,57,53,.12)}.kjs.s1{border-color:var(--g);background:rgba(30,136,229,.12)}
+.kjs.win{background:rgba(46,158,68,.35)}.kjs.lock{opacity:.4}
+.kjn{font-size:clamp(20px,2.4vw,34px);font-weight:900}
+.kjsc{font-size:clamp(50px,6vw,90px);font-weight:900;background:#fff;border-radius:22px;min-width:110px;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.15);padding:0 16px}
+.kjb{display:flex;gap:18px}
+.kjm{flex:1.1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.bltop{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:1400px}
+.bltop .r{color:var(--k)}.bltop .b{color:var(--g)}
+.bltm{font-size:clamp(40px,4.4vw,64px);font-weight:900;background:rgba(255,255,255,.75);border-radius:20px;padding:0 22px}.bltm.warn{background:var(--k);color:#fff}
+.blw{display:flex;gap:14px;width:100%;flex:1;min-height:62vh}
+.blh{flex:1;position:relative;overflow:hidden;border-radius:28px;border:6px solid}
+.blh.s0{border-color:var(--k);background:rgba(229,57,53,.1)}.blh.s1{border-color:var(--g);background:rgba(30,136,229,.1)}
+.blhd{position:absolute;left:0;right:0;top:0;text-align:center;font-weight:900;font-size:clamp(15px,1.7vw,24px);background:rgba(255,255,255,.75);padding:6px;z-index:2}
+.blhd b{font-size:1.4em}.blh.s0 .blhd b{color:var(--k)}.blh.s1 .blhd b{color:var(--g)}
+.bal{position:absolute;left:0;top:0;width:clamp(96px,10vw,140px);height:clamp(116px,12vw,168px);border-radius:50% 50% 47% 53%/58% 58% 42% 42%;background:radial-gradient(circle at 32% 28%,#ffffffcc 0 9%,var(--c) 10% 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset -8px -10px 0 rgba(0,0,0,.12);will-change:transform}
+.bal::after{content:'';position:absolute;left:50%;top:100%;width:2px;height:50px;background:#0004}
+.bal .be{font-size:clamp(34px,3.6vw,52px);line-height:1}.bal .bw{font-size:clamp(14px,1.5vw,22px);font-weight:900;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.bal.boom{animation:boom .25s forwards}@keyframes boom{to{scale:1.6;opacity:0}}
+@media(max-width:700px){.kj{flex-direction:column}.kjm{order:-1}.kjsc{font-size:40px;min-width:70px}.blw{flex-direction:column;min-height:80vh}.bal{width:80px;height:100px}}
 #cf{position:fixed;inset:0;pointer-events:none;z-index:30}
 @media(max-width:700px){.tiles{gap:16px}.bins{gap:10px}.card2{padding:8px 20px}.wl{border-radius:12px}}
 </style>
@@ -77,6 +99,8 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
   <div class="hero"><div class="letters"><div class="big k">К</div><div class="big g">Г</div></div>
     <h1>К және Г дыбыстары</h1><p>Ашық сабақ · 1-сынып</p></div>
   <div class="cards" id="cards"></div>
+  <h2 class="sech">⚔️ Екі оқушы жарысы</h2>
+  <div class="cards" id="dcards"></div>
 </section>
 <section id="game" class="screen">
   <div class="top"><button class="btn" onclick="goHome()">🏠 Басты бет</button><div class="gt" id="gt"></div><button class="btn" id="snd" onclick="snd=!snd;this.textContent=snd?'🔊':'🔇'">🔊</button></div>
@@ -117,6 +141,7 @@ function drag(elm,targetSel,onDrop){elm.addEventListener('pointerdown',e=>{e.pre
 let RID=0,CUR=null;const alive=id=>id===RID;
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));scrollTo(0,0)}
 function start(g){RID++;stopCF();$('#final').classList.remove('on');CUR=g;$('#gt').textContent=g.icon+' '+g.title;show('game');const st=$('#stage'),id=RID;
+  if(g.run){st.innerHTML='';return g.run(st,id)}
   const tasks=g.make();let i=0,err=0;
   const step=()=>{if(!alive(id))return;st.innerHTML='';const d=el('div','dots');tasks.forEach((_,j)=>d.append(el('i',j<i?'d':j===i?'c':'')));st.append(d);
     let fired=false;g.render(tasks[i],st,()=>{if(fired)return;fired=true;beep('ok');flash('Дұрыс! 🎉');i++;setTimeout(()=>{if(!alive(id))return;i>=tasks.length?finish(id,err):step()},1100)},()=>{err++;beep('bad')})};step()}
@@ -149,6 +174,46 @@ const GAMES=[
      else{bad();reanim(B[v],'shake');c.querySelector('.nm').innerHTML=colorWord(w);flash(`${w} — ${L.toUpperCase()} дыбысы`)}}
    drag(c,'.bin',(tgt,tap)=>{if(tgt)put(tgt.dataset.v)})}},
 ];
+
+/* ===== 2 оқушы жарысы ===== */
+function duelEnd(id,sc,extra){if(!alive(id))return;RID++;const w=sc[0]>sc[1]?0:sc[1]>sc[0]?1:-1,nm=i=>i?'🔵 2-оқушы':'🔴 1-оқушы';
+  $('#fst').textContent=w<0?'🤝':'🏆';$('#fh').textContent=w<0?'Тең түсті!':nm(w)+' жеңді!';$('#fp').innerHTML=`🔴 ${sc[0]} : ${sc[1]} 🔵`+(extra?'<br>'+extra:'');$('#final').classList.add('on');beep('win');confetti()}
+const ALLW=[...KW,...GW];
+const DGAMES=[
+{icon:'⚡',title:'Кім жылдам?',sub:'Суретке қарап, бірінші боп К не Г бас! 10 ұпайға дейін',
+ run(st,id){const GOAL=10,sc=[0,0];let q=shuffle(ALLW),qi=0,cur=null,locked=[false,false],busy=false;
+   const wrap=el('div','kj');st.append(wrap);
+   const side=si=>{const d=el('div','kjs s'+si,`<div class="kjn">${si?'🔵 2-оқушы':'🔴 1-оқушы'}</div><div class="kjsc">0</div><div class="kjb"></div>`);
+     [['к','К','k'],['г','Г','g']].forEach(([v,lab,c])=>{const b=el('button','lt '+c,lab);b.onclick=()=>press(si,v,d);d.querySelector('.kjb').append(b)});return d};
+   const s0=side(0),mid=el('div','kjm',`<div class="card2"><div class="pic"></div><div class="nm">?</div></div><div class="dots"></div>`),s1=side(1);wrap.append(s0,mid,s1);
+   const pic=mid.querySelector('.pic'),nm=mid.querySelector('.nm'),dots=mid.querySelector('.dots');
+   const drawDots=()=>{dots.innerHTML=`<b style="font-size:20px">Мақсат: ${GOAL} ұпай</b>`};drawDots();
+   const next=()=>{if(!alive(id))return;if(qi>=q.length){q=shuffle(ALLW);qi=0}cur=q[qi++];locked=[false,false];busy=false;[s0,s1].forEach(d=>d.classList.remove('lock','win'));pic.textContent=cur[0];reanim(pic,'pop');nm.innerHTML='?'};
+   function press(si,v,d){if(busy||locked[si]||!alive(id))return;const L=letterOf(cur[1]);
+     if(v===L){busy=true;sc[si]++;beep('ok');d.querySelector('.kjsc').textContent=sc[si];d.classList.add('win');nm.innerHTML=colorWord(cur[1]);
+       if(sc[si]>=GOAL)return setTimeout(()=>duelEnd(id,sc),900);setTimeout(next,1100)}
+     else{beep('bad');locked[si]=true;d.classList.add('lock');reanim(d.querySelector('.kjb'),'shake');
+       if(locked[0]&&locked[1]){busy=true;nm.innerHTML=colorWord(cur[1]);setTimeout(next,1300)}}}
+   next()}},
+{icon:'🎈',title:'Шарларды жар',sub:'🔴 К әрпі бар шарларды, 🔵 Г әрпі бар шарларды жарады. 60 секунд',
+ run(st,id){const sc=[0,0],LIM=60,t0=performance.now();
+   const top=el('div','bltop',`<div class="kjsc r">0</div><div class="bltm">60</div><div class="kjsc b">0</div>`);const wrap=el('div','blw');st.append(top,wrap);
+   const halves=[0,1].map(si=>{const h=el('div','blh s'+si,`<div class="blhd">${si?'🔵 2-оқушы: <b>Г</b> әрпі бар шарлар':'🔴 1-оқушы: <b>К</b> әрпі бар шарлар'}</div>`);wrap.append(h);return{h,si,want:si?'г':'к',bs:[],since:1e9}});
+   const scEl=[top.querySelector('.r'),top.querySelector('.b')],tmEl=top.querySelector('.bltm');
+   const COL=['#ff6b6b','#ffa94d','#69db7c','#4dabf7','#b197fc','#f783ac'];
+   function spawn(H){const W=H.h.clientWidth,Ht=H.h.clientHeight;const has=H.bs.filter(b=>letterOf(b.w[1])===H.want).length;
+     const pool=Math.random()<(has?.45:.75)?(H.want==='к'?KW:GW):(H.want==='к'?GW:KW);const w=pool[Math.floor(Math.random()*pool.length)];
+     const e=el('button','bal',`<span class="be">${w[0]}</span><span class="bw">${w[1]}</span>`);e.style.setProperty('--c',COL[Math.floor(Math.random()*COL.length)]);H.h.append(e);
+     const b={e,w,x:Math.random()*Math.max(0,W-e.offsetWidth),y:Ht+10};e.style.transform=`translate(${b.x}px,${b.y}px)`;H.bs.push(b);
+     e.addEventListener('pointerdown',ev=>{ev.preventDefault();if(!alive(id)||b.dead)return;b.dead=true;H.bs=H.bs.filter(x=>x!==b);e.classList.add('boom');setTimeout(()=>e.remove(),250);
+       if(letterOf(w[1])===H.want){sc[H.si]++;beep('ok')}else{sc[H.si]=Math.max(0,sc[H.si]-1);beep('bad')}scEl[H.si].textContent=sc[H.si];reanim(scEl[H.si],'pop')})}
+   let last=performance.now();(function f(now){if(!alive(id))return;const dt=Math.min(.05,(now-last)/1000);last=now;const left=Math.max(0,LIM-(now-t0)/1000);tmEl.textContent=Math.ceil(left);tmEl.classList.toggle('warn',left<=10);
+     if(left<=0){return duelEnd(id,sc,'⏰ Уақыт бітті!')}
+     halves.forEach(H=>{const Ht=H.h.clientHeight,sp=Ht/6;H.since+=dt*1000;if(H.since>900&&H.bs.length<6){H.since=0;spawn(H)}
+       H.bs.forEach(b=>{b.y-=sp*dt;b.e.style.transform=`translate(${b.x}px,${b.y}px)`});H.bs=H.bs.filter(b=>{if(b.y<-180){b.e.remove();return false}return true})});
+     requestAnimationFrame(f)})(last)}},
+];
+DGAMES.forEach(g=>{const c=el('button','card',`<div class="ic">${g.icon}</div><div class="t">${g.title}</div><div class="s">${g.sub}</div>`);c.onclick=()=>start(g);$('#dcards').append(c)});
 GAMES.forEach(g=>{const c=el('button','card',`<div class="ic">${g.icon}</div><div class="t">${g.title}</div><div class="s">${g.sub}</div>`);c.onclick=()=>start(g);$('#cards').append(c)});
 </script>
 </body>
