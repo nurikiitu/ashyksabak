@@ -99,6 +99,10 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .kjt .lt{width:clamp(56px,5.4vw,96px);height:clamp(56px,5.4vw,96px);font-size:clamp(30px,3.2vw,54px)}
 .kjt .lt:not(.k):not(.g){background:#fff;color:#223;border:3px solid #ccd}
 .kjt .lt.used{opacity:.15;pointer-events:none}
+.kgopt{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.kgb{font-size:clamp(34px,4.2vw,64px);font-weight:900;background:#fff;color:#223;border-radius:26px;padding:14px 38px;box-shadow:0 8px 0 rgba(0,0,0,.18);border:4px solid #dde}
+.kgb .k{color:var(--k)}.kgb .g{color:var(--g)}.kgb.ok{background:#c8f7c5;border-color:var(--grn)}.kgb.no{background:#ffc9c9;border-color:var(--k);opacity:.6}
+.kgopt .howto{flex-basis:100%;text-align:center}
 #cf{position:fixed;inset:0;pointer-events:none;z-index:30}
 @media(max-width:700px){.tiles{gap:16px}.bins{gap:10px}.card2{padding:8px 20px}.wl{border-radius:12px}}
 </style>
@@ -184,6 +188,16 @@ const GAMES=[
    drag(c,'.bin',(tgt,tap)=>{if(tgt)put(tgt.dataset.v)})}},
 ];
 
+/* 3. Қай сөз дұрыс? */
+const KG=[['👗','көйлек'],['👒','бөрік'],['❤️','жүрек'],['🦋','көбелек'],['👢','етік'],['🪣','шелек'],['🐶','күшік'],['👓','көзілдірік'],['👁️','кірпік'],['⭐','тілек'],['💪','білек'],['🚪','есік'],['👶','бесік'],['🦴','сүйек'],['🛏️','төсек'],['🫘','бүйрек'],['🌳','терек'],['💍','жүзік'],['📿','білезік'],['🌀','өрнек'],['🫐','жідек'],['🥣','елек'],['🧽','шүберек'],['🏪','дүңгіршек'],['🌱','бүршік'],['🍑','өрік'],['🐦','кекілік'],['🪨','кесек'],['⭕','дөңгелек'],['🧔','иек'],['🪏','күрек'],['🕳️','тесік']];
+GAMES.push({icon:'✍️',title:'Қай сөз дұрыс?',sub:'Көйлекі ме, көйлегі ме? Дұрысын тап',
+ make:()=>pick(KG,10).map(([e,w],i)=>{const st=w.slice(0,-1);return Math.random()<.7?{e,w,good:st+'гі',badw:st+'кі',why:'Дауысты әріп қосылса, К → Г болады'}:{e,w,good:w+'тер',badw:st+'гтер',why:'Дауыссыз әріп қосылса, К өзгермейді'}}),
+ render(t,st,ok,bad){st.append(el('div','q','Қай сөз дұрыс жазылған?'));
+   st.append(el('div','card2',`<div class="pic">${t.e}</div><div class="nm">${colorWord(t.w)}</div>`));
+   const row=el('div','kgopt');let done=false;
+   shuffle([t.good,t.badw]).forEach(v=>{const b=el('button','kgb',colorWord(v));b.onclick=()=>{if(done)return;
+     if(v===t.good){done=true;b.classList.add('ok');row.append(el('div','howto',t.why));ok()}else{bad();b.classList.add('no');reanim(b,'shake');flash(t.why)}};row.append(b)});
+   st.append(row)}});
 /* ===== 2 оқушы жарысы ===== */
 function duelEnd(id,sc,extra){if(!alive(id))return;RID++;const w=sc[0]>sc[1]?0:sc[1]>sc[0]?1:-1,nm=i=>i?'🔵 2-оқушы':'🔴 1-оқушы';
   $('#fst').textContent=w<0?'🤝':'🏆';$('#fh').textContent=w<0?'Тең түсті!':nm(w)+' жеңді!';$('#fp').innerHTML=`🔴 ${sc[0]} : ${sc[1]} 🔵`+(extra?'<br>'+extra:'');$('#final').classList.add('on');beep('win');confetti()}
