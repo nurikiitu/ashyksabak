@@ -57,7 +57,7 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;touch-action
 .card2{background:#fff;border-radius:30px;padding:10px 40px;display:flex;flex-direction:column;align-items:center;box-shadow:0 8px 0 rgba(0,0,0,.15);touch-action:none;cursor:grab;min-width:220px}
 .card2 .pic{font-size:clamp(100px,12vw,160px)}
 .card2 .nm{font-size:clamp(26px,3vw,40px);font-weight:900;min-height:1.3em}
-.card2 .nm .k{color:var(--k)}.card2 .nm .g{color:var(--g)}
+.card2 .nm .k{color:var(--k)}.card2 .nm .gap{display:inline-block;min-width:.8em;border-bottom:4px solid #333;color:#999;margin:0 2px}.card2 .nm .g{color:var(--g)}
 #flash{position:fixed;left:50%;top:14%;translate:-50% 0;font-size:clamp(34px,5vw,64px);font-weight:900;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.3);pointer-events:none;opacity:0;transition:opacity .2s;z-index:15;white-space:nowrap}
 #flash.on{opacity:1}
 #final{position:fixed;inset:0;background:rgba(40,20,40,.55);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
@@ -180,7 +180,7 @@ function duelEnd(id,sc,extra){if(!alive(id))return;RID++;const w=sc[0]>sc[1]?0:s
   $('#fst').textContent=w<0?'🤝':'🏆';$('#fh').textContent=w<0?'Тең түсті!':nm(w)+' жеңді!';$('#fp').innerHTML=`🔴 ${sc[0]} : ${sc[1]} 🔵`+(extra?'<br>'+extra:'');$('#final').classList.add('on');beep('win');confetti()}
 const ALLW=[...KW,...GW];
 const DGAMES=[
-{icon:'⚡',title:'Кім жылдам?',sub:'Суретке қарап, бірінші боп К не Г бас! 10 ұпайға дейін',
+{icon:'⚡',title:'Кім жылдам?',sub:'Сөзде қай әріп жетіспейді? Бірінші боп К не Г бас! 10 ұпайға дейін',
  run(st,id){const GOAL=10,sc=[0,0];let q=shuffle(ALLW),qi=0,cur=null,locked=[false,false],busy=false;
    const wrap=el('div','kj');st.append(wrap);
    const side=si=>{const d=el('div','kjs s'+si,`<div class="kjn">${si?'🔵 2-оқушы':'🔴 1-оқушы'}</div><div class="kjsc">0</div><div class="kjb"></div>`);
@@ -188,7 +188,7 @@ const DGAMES=[
    const s0=side(0),mid=el('div','kjm',`<div class="card2"><div class="pic"></div><div class="nm">?</div></div><div class="dots"></div>`),s1=side(1);wrap.append(s0,mid,s1);
    const pic=mid.querySelector('.pic'),nm=mid.querySelector('.nm'),dots=mid.querySelector('.dots');
    const drawDots=()=>{dots.innerHTML=`<b style="font-size:20px">Мақсат: ${GOAL} ұпай</b>`};drawDots();
-   const next=()=>{if(!alive(id))return;if(qi>=q.length){q=shuffle(ALLW);qi=0}cur=q[qi++];locked=[false,false];busy=false;[s0,s1].forEach(d=>d.classList.remove('lock','win'));pic.textContent=cur[0];reanim(pic,'pop');nm.innerHTML='?'};
+   const next=()=>{if(!alive(id))return;if(qi>=q.length){q=shuffle(ALLW);qi=0}cur=q[qi++];locked=[false,false];busy=false;[s0,s1].forEach(d=>d.classList.remove('lock','win'));pic.textContent=cur[0];reanim(pic,'pop');nm.innerHTML=[...cur[1]].map(c=>/[кг]/.test(c)?'<span class="gap">?</span>':c).join('')};
    function press(si,v,d){if(busy||locked[si]||!alive(id))return;const L=letterOf(cur[1]);
      if(v===L){busy=true;sc[si]++;beep('ok');d.querySelector('.kjsc').textContent=sc[si];d.classList.add('win');nm.innerHTML=colorWord(cur[1]);
        if(sc[si]>=GOAL)return setTimeout(()=>duelEnd(id,sc),900);setTimeout(next,1100)}
